@@ -1,0 +1,2 @@
+valuable(gold).
+

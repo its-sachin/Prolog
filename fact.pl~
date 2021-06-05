@@ -1,0 +1,79 @@
+fact(0,1).
+fact(N, Result) :- N >= 0,
+                   M is N - 1,
+                   fact(M, NextResult),
+                   Result is NextResult * N.
+
+div(X,Y,0) :- X<Y.
+div(X,Y,Z) :- X>=Y,
+              D is X -Y,
+              P is Z -1,
+              div(D,Y,P).
+
+mod(X,Y,X) :- X<Y.
+mod(X,Y,Z) :- X>=Y,
+              D is X-Y,
+              mod(D,Y,Z).
+
+equal(X,Y) :- X=Y.
+gequal(X,Y) :- equal(X,Y);X>Y.
+
+find([],_) :- false.
+find([Head|Tail],Num) :- equal(Head,Num);
+                       find(Tail,Num).
+
+del([Num|Tail],Tail,Num).
+del([H1|T1],[H1|T2],Num) :- del(T1,T2,Num).
+
+addL([],L,L).
+addL([H|T],L2,[H|L3]) :- addL(T,L2,L3).
+
+reorder([],[]).
+reorder(List,[H|T]) :- del(List,Del,H),
+                       reorder(Del,T).
+sorted([]).
+sorted([_]).
+sorted([H1|[H2|T]]) :- H1=<H2,
+                       sorted([H2|T]).
+
+isort(X,Y) :- reorder(X,Y),
+             sorted(Y).
+
+
+leftPart([],_).
+leftPart([H|T],N) :- H<N,leftPart(T,N).
+
+rightPart([],_).
+rightPart([H|T],N) :- H>=N,rightPart(T,N).
+
+partiton(List,Pivot,P1,P2) :-  addL(P1,P2,M),
+                               reorder(List,M),
+                               leftPart(P1,Pivot),
+                               rightPart(P2,Pivot).
+
+qsort([],[]).
+qsort([A],[A]).
+qsort([H|T],Ans) :-  write(" QSORT "), write(H),
+                      partiton([H|T],H,P1,[H|P2]),
+                      qsort(P1,A1),
+                      qsort(P2,A2),
+                      addL(A1,[H|A2],Ans).
+
+split([],[],[]).
+split([A],[A],[]).
+split([H1|[H2|T]],[H1|T1],[H2|T2]) :- split(T,T1,T2).
+
+merge(A,[],A).
+merge([],A,A).
+merge([H1|T1],[H2|T2],[H1|T]) :- H1=<H2,
+                                merge(T1,[H2|T2],T).
+merge([H1|T1],[H2|T2],[H2|T]) :- H1>H2,
+                                merge([H1|T1],T2,T).
+
+msort([],[]).
+msort([A],[A]).
+msort([H1|[H2|T]],Ans) :- split([H1|[H2|T]],L1,L2),
+                          msort(L1,A1),
+                          msort(L2,A2),
+                          merge(A1,A2,Ans).
+
